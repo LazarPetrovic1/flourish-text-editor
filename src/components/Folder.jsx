@@ -1,49 +1,49 @@
 import React, { useState } from 'react'
 import File from './File'
 import truncate from 'truncate'
-import { MainPadder, FolderStuff, Icon } from '../styled/folder-styles'
+import {
+  MainPadder,
+  FolderStuff,
+  Icon,
+  FolderStuffContainer
+} from '../styled/folder-styles'
+import { LI } from '../styled/list'
+import { connect } from 'react-redux'
 
-function Folder({ files, selected, name, onClick }) {
+function Folder ({ files, selected, name }) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <MainPadder>
       <FolderStuff onClick={e => setIsOpen(!isOpen)}>
-        <i className="fas fa-folder" />
-        <Icon
-          className={`fas fa-${isOpen ? 'chevron-down' : 'chevron-right'}`}
-        />
-        <span>{truncate(name, 15)}</span>
+        <FolderStuffContainer>
+          <i className='fas fa-folder' />
+          <Icon
+            className={`fas fa-${isOpen ? 'chevron-down' : 'chevron-right'}`}
+          />
+          <span>{truncate(name, 15)}</span>
+        </FolderStuffContainer>
       </FolderStuff>
       {isOpen &&
         files.length > 0 &&
-        files.map(
-          ((file, i) =>
-            file.type === 'directory' ? (
-              <Folder
-                onClick={onClick}
-                files={file.children}
-                name={file.name}
-                key={file.path}
-                selected={selected}
-              />
-            ) : (
-              file.type === 'file' &&
-              isOpen && (
-                <div key={file.path}>
-                  <File
-                    selected={selected.path}
-                    own={file.path}
-                    key={file.path}
-                    child={file}
-                    onClick={onClick}
-                  />
-                </div>
-              )
-            ): null)
+        files.map((file, i) =>
+          file.type === 'directory' ? (
+            <LI key={file.path} selected={selected.path} own={file.path}>
+              <Folder files={file.children} name={file.name} key={file.path} />
+            </LI>
+          ) : (
+            file.type === 'file' &&
+            isOpen && (
+              <File key={file.path} selected={selected.path} child={file} />
+            )
+          )
         )}
     </MainPadder>
   )
 }
 
-export default Folder
+const mapStateToProps = state => ({
+  selected: state.selection
+})
+
+export default connect(mapStateToProps)(Folder)

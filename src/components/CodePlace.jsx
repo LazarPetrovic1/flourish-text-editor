@@ -1,49 +1,75 @@
 // eslint-disable-next-line
 import React, { useState, useEffect } from 'react'
+import MarkdownPreview from '@uiw/react-markdown-preview'
 import TextArea from '../styled/textarea'
+import HelpRender from '../styled/helprender'
 import ImageRenderer from '../styled/imagerenderer'
 import Numbered from '../styled/numbered'
-import ImagePrompt from '../styled/imageprompt'
 import { getLines } from '../utils/getLines'
 import { isImage } from '../utils/isImage'
 import { range } from '../utils/range'
+import { readFile } from '../utils/readFile'
 import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync'
 import { saveFile } from '../utils/saveFile'
-const fs = window.require('fs')
+import { connect } from 'react-redux'
+import { closeTab } from '../actions/tab'
+import { setContent } from '../actions/content'
+import { deselectItem, selectItem } from '../actions/selection'
 const { ipcRenderer } = window.require('electron')
 
-function CodePlace ({ content, setContent, selected, setSelected, setDir }) {
+function CodePlace ({
+  dir,
+  content,
+  tabs,
+  selected,
+  actualContent,
+  setActualContent
+}) {
   const [lineNumbers, setLineNumbers] = useState([1])
   const [image, setImage] = useState(false)
+  const [isHelper, setIsHelper] = useState(false)
   useEffect(() => {
     ;(async function () {
-      if (selected) {
-        const x = getLines(selected.path)
-        if (lineNumbers.length <= 1) {
-          const nums = range(1, x + 1)
-          setLineNumbers(nums)
-        }
+      const x = getLines(selected.path)
+      if (lineNumbers.length <= 1) {
+        const nums = range(1, x + 1)
+        setLineNumbers(nums)
+      }
 
-        if (isImage(selected.path)) {
-          await setImage(true)
-        } else if (!isImage(selected.path)) {
-          setImage(false)
-        }
+      if (isImage(selected.path)) {
+        await setImage(true)
+      } else if (!isImage(selected.path)) {
+        setImage(false)
       }
 
       if (!selected && content.length < 1 && lineNumbers.length !== 1) {
         setLineNumbers([1])
       }
+
+      if (selected && selected.isHelper) {
+        setIsHelper(true)
+      }
     })()
-  }, [selected, lineNumbers, image])
+    setContent(selected)
+    setActualContent(readFile(selected.path))
+    // eslint-disable-next-line
+  }, [selected])
 
   ipcRenderer.on('save-file', () => {
-    return saveFile(selected.path, content)
+    setContent({ content: actualContent })
+    return saveFile(selected.path, actualContent)
   })
 
-  ipcRenderer.on('close-file', () => {
-    setContent('')
-    setSelected('')
+  ipcRenderer.on('close-file', async () => {
+    if (tabs.length === 1) {
+      await closeTab(selected.path)
+      await deselectItem()
+      await setContent({ content: '' })
+      return
+    }
+    await closeTab(selected.path)
+    await selectItem(tabs[0])
+    await setContent(selected)
   })
 
   const onKeyDown = e => {
@@ -57,7 +83,7 @@ function CodePlace ({ content, setContent, selected, setSelected, setDir }) {
 
     if (e.keyCode === 9) {
       // Tab
-      setContent(content + ' ' + ' ')
+      setActualContent(actualContent.concat(' ', ' '))
       // return
     }
 
@@ -67,7 +93,10 @@ function CodePlace ({ content, setContent, selected, setSelected, setDir }) {
         // return
       }
 
-      if (content.split('\n')[content.split('\n').length - 1].length < 1) {
+      if (
+        actualContent.split('\n')[actualContent.split('\n').length - 1].length <
+        1
+      ) {
         setLineNumbers(lineNumbers.slice(0, lineNumbers.length - 1))
         // return
       }
@@ -99,14 +128,23 @@ function CodePlace ({ content, setContent, selected, setSelected, setDir }) {
       case 'F12':
       case 'Escape':
         break
+      // case '{':
+      //   setActualContent(actualContent.concat('{', '}'))
+      //   break
+      // case '[':
+      //   setActualContent(actualContent.concat('[', ']'))
+      //   break
+      // case '(':
+      //   setActualContent(actualContent.concat('(', ')'))
+      //   break
       default:
         break
     }
   }
 
-  const onChange = e => {
+  const onChange = async e => {
     e.persist()
-    setContent(e.target.value)
+    await setActualContent(e.target.value)
   }
 
   return image ? (
@@ -122,17 +160,27 @@ function CodePlace ({ content, setContent, selected, setSelected, setDir }) {
       <ScrollSync>
         <>
           <ScrollSyncPane>
-            <Numbered className='nrs'>
-              {lineNumbers &&
-                lineNumbers.map(val => <div key={val}>{val}</div>)}
-            </Numbered>
+            {!isHelper ? (
+              <Numbered className='nrs'>
+                {lineNumbers &&
+                  lineNumbers.map(val => <div key={val}>{val}</div>)}
+              </Numbered>
+            ) : null}
           </ScrollSyncPane>
           <ScrollSyncPane>
-            <TextArea
-              value={content}
-              onKeyDown={onKeyDown}
-              onChange={onChange}
-            />
+            {isHelper ? (
+              <>
+                <HelpRender>
+                  <MarkdownPreview source={actualContent} />
+                </HelpRender>
+              </>
+            ) : (
+              <TextArea
+                value={actualContent}
+                onKeyDown={onKeyDown}
+                onChange={onChange}
+              />
+            )}
           </ScrollSyncPane>
         </>
       </ScrollSync>
@@ -140,4 +188,16 @@ function CodePlace ({ content, setContent, selected, setSelected, setDir }) {
   )
 }
 
-export default CodePlace
+const mapStateToProps = state => ({
+  dir: state.directories,
+  content: state.content,
+  tabs: state.tab,
+  selected: state.selection
+})
+
+export default connect(mapStateToProps, {
+  closeTab,
+  setContent,
+  deselectItem,
+  selectItem
+})(CodePlace)

@@ -10,9 +10,13 @@ const {
 } = require('electron')
 const path = require('path')
 const dirTree = require('directory-tree')
+const { lstatSync } = require('fs')
+const handleRedirect = require('./utils/handleRedirect')
 
 const isMac = process.platform === 'darwin'
-let win
+let win, loader, helper
+
+ipcMain.on('get-helper', (item, url) => handleRedirect(item, url))
 
 const template = [
   {
@@ -22,12 +26,32 @@ const template = [
         label: 'Open File',
         click: async () => {
           const { filePaths } = await dialog.showOpenDialog({
+            properties: ['showHiddenFiles']
+          })
+
+          const type = (await lstatSync(filePaths[0]).isFile())
+            ? 'file'
+            : 'directory'
+
+          const name = await filePaths[0].split('/')[
+            filePaths[0].split('/').length - 1
+          ]
+
+          win.webContents.send('open-file', { path: filePaths[0], type, name })
+        },
+        accelerator: 'Ctrl+O'
+      },
+      { type: 'separator' },
+      {
+        label: 'Open Project Folder',
+        click: async () => {
+          const { filePaths } = await dialog.showOpenDialog({
             properties: ['openDirectory', 'showHiddenFiles']
           })
           const tree = await dirTree(filePaths[0])
-          win.webContents.send('open-file', tree)
+          win.webContents.send('open-project', tree)
         },
-        accelerator: 'Ctrl+O'
+        accelerator: 'Ctrl+Shift+O'
       },
       {
         label: 'Save File',
@@ -36,6 +60,15 @@ const template = [
         },
         accelerator: 'Ctrl+S'
       },
+      { type: 'separator' },
+      {
+        label: 'Open CodeLine',
+        click: async () => {
+          win.webContents.send('open-code-line')
+        },
+        accelerator: 'Ctrl+Shift+I'
+      },
+      { type: 'separator' },
       {
         label: 'Close File',
         click: async () => {
@@ -53,18 +86,81 @@ const template = [
         click: () =>
           win
             ? win.webContents.toggleDevTools()
-            : console.log('Window undefined. Hello, there!'),
+            : console.warn('Window undefined. Hello, there!'),
         accelerator: 'Ctrl+Q'
       },
       {
         label: 'Reload',
         click: () =>
-          win ? win.reload() : console.log('Window undefined. Hi, there'),
+          win ? win.reload() : console.warn('Window undefined. Hi, there'),
         accelerator: 'Ctrl+R'
+      }
+    ]
+  },
+  {
+    label: 'Helpers',
+    submenu: [
+      {
+        label: 'Stack Overflow',
+        click: e => {
+          handleRedirect(e, 'https://stackoverflow.com/')
+        },
+        accelerator: 'Ctrl+Alt+S'
+      },
+      {
+        label: 'GitHub',
+        click: e => {
+          handleRedirect(e, 'https://github.com/')
+        },
+        accelerator: 'Ctrl+Alt+G'
+      },
+      {
+        label: 'Font Awesome',
+        click: e => {
+          handleRedirect(e, 'https://fontawesome.com/')
+        },
+        accelerator: 'Ctrl+Alt+F'
+      },
+      {
+        label: 'CDNjs',
+        click: e => {
+          handleRedirect(e, 'https://cdnjs.com/')
+        },
+        accelerator: 'Ctrl+Alt+C'
+      }
+    ]
+  },
+  {
+    label: 'Help',
+    submenu: [
+      {
+        label: 'Open Help File',
+        click: e =>
+          win
+            ? win.webContents.send('get-help', __dirname)
+            : console.warn('Window undefined. Hello, there!'),
+        accelerator: 'Ctrl+H'
+      },
+      {
+        label: 'View License',
+        click: e =>
+          win
+            ? win.webContents.send('get-license', __dirname)
+            : console.warn('Window undefined. Hello, there!'),
+        accelerator: 'Ctrl+<'
+      },
+      {
+        label: "What's left",
+        click: e =>
+          win
+            ? win.webContents.send('jobs-left', __dirname)
+            : console.warn('Window undefined. Hello, there!'),
+        accelerator: 'Ctrl+>'
       }
     ]
   }
 ]
+
 protocol.registerSchemesAsPrivileged([
   {
     scheme: 'root',
@@ -77,27 +173,50 @@ protocol.registerSchemesAsPrivileged([
 
 const createWindow = () => {
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 770,
     webPreferences: {
       nodeIntegration: true,
       spellcheck: true,
-      enableRemoteModule: true
+      enableRemoteModule: true,
+      transparent: true
     },
     icon: `${__dirname}/assets/logo.png`
   })
 
   win.loadURL('http://localhost:3000')
-  // win.webContents.openDevTools()
   win.on('closed', function () {
     win = null
   })
+
+  loader.close()
 
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
 
 app.on('ready', () => {
+  const {
+    default: installExtension,
+    REACT_DEVELOPER_TOOLS,
+    REDUX_DEVTOOLS
+  } = require('electron-devtools-installer')
+
+  installExtension(REACT_DEVELOPER_TOOLS)
+    .then(name => {
+      console.log(`Added extension: ${name}`)
+    })
+    .catch(err => {
+      console.warn(`The following error occured: ${err}`)
+    })
+
+  installExtension(REDUX_DEVTOOLS)
+    .then(name => {
+      console.log(`Added extension: ${name}`)
+    })
+    .catch(err => {
+      console.warn(`The following error occured: ${err}`)
+    })
   // access to the root of the system, policy of some framework may prevent the use of file://
   protocol.registerFileProtocol('root', (request, callback) => {
     let url = request.url.substr(7)
@@ -111,7 +230,17 @@ app.on('ready', () => {
     }
   })
 
-  createWindow()
+  loader = new BrowserWindow({
+    width: 200,
+    height: 200,
+    frame: false
+  })
+
+  loader.loadFile(`${__dirname}/loading.html`)
+
+  setTimeout(function () {
+    createWindow()
+  }, 5000) // Takes about 5s to load electron and react after npm run dev, might as well show a simple animation
 })
 
 app.on('window-all-closed', function () {

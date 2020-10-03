@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 const ImageRenderer = styled.div`
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 2.5rem);
   padding: 1rem;
   justify-content: center;
   align-items: center;

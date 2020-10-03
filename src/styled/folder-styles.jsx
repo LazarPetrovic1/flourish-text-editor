@@ -13,6 +13,11 @@ export const FolderStuff = styled.div`
   user-select: none;
 `
 
+export const FolderStuffContainer = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+`
+
 export const Icon = styled.span`
   display: inline-block;
   margin: 0 10px;

@@ -9,6 +9,8 @@ const Welcome = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  cursor: default;
+  user-select: none;
 `
 
 export default Welcome

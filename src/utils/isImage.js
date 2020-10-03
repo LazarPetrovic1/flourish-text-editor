@@ -3,6 +3,7 @@ export const isImage = filename => {
     .split('.')
     [filename.split('.').length - 1].toLowerCase()
 
+  // SVGs are treated as textual files
   switch (extension) {
     case 'tif':
     case 'tiff':

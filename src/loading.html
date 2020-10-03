@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <style>
+  body {
+    height: 100vh;
+    background-color: rgb(64, 61, 65);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  @keyframes rotator {
+    from { transform: rotateZ(0); }
+    to { transform: rotateZ(360deg); }
+  }
+
+  .img-rotate {
+    width: 125px;
+    height: 150px;
+    height: auto;
+    animation: rotator 3600ms linear infinite;
+  }
+
+  </style>
+</head>
+<body>
+  <img
+    class="img-rotate"
+    src="assets/logo-reversed.png"
+    alt="Logo reversed colours"
+  >
+</body>
+</html>

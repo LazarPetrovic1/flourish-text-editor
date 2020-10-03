@@ -6,22 +6,16 @@ import Close from '../styled/close'
 import ProjectFolder from '../styled/projectfolder'
 import { Icon } from '../styled/folder-styles'
 import SideNavContainer from '../styled/sidenavcontainer'
-import { UL, LI } from '../styled/list'
-import { readFile } from '../utils/readFile'
+import { UL } from '../styled/list'
 import File from './File'
+import { isEmpty } from '../utils/isEmpty'
 import Folder from './Folder'
+import { connect } from 'react-redux'
 
-function SideBar ({ dir, content, setContent, setSelected, selected }) {
+function SideBar ({ content, setContent, dir }) {
   const [open, setOpen] = useState(true)
   const [see, setSee] = useState(true)
-  const getContent = item => {
-    if (item.type === 'file') {
-      setContent(readFile(item.path))
-      setSelected(item)
-    } else {
-      console.log("It's a dir!")
-    }
-  }
+
   return (
     <SideNavContainer open={open} style={{ position: 'relative' }}>
       <Close onClick={() => setOpen(!open)} open={open}>
@@ -33,7 +27,7 @@ function SideBar ({ dir, content, setContent, setSelected, selected }) {
           direction='e'
         >
           <Sidenav>
-            {dir && (
+            {!isEmpty(dir) && (
               <ProjectFolder className='nowrap' onClick={() => setSee(!see)}>
                 {dir.name}
                 <Icon>
@@ -46,24 +40,16 @@ function SideBar ({ dir, content, setContent, setSelected, selected }) {
               </ProjectFolder>
             )}
             <UL>
-              {dir &&
+              {!isEmpty(dir) &&
                 see &&
                 dir.children.map(child =>
                   child.type === 'file' ? (
-                    <File
-                      selected={selected.path}
-                      own={child.path}
-                      key={child.path}
-                      child={child}
-                      onClick={() => getContent(child)}
-                    />
+                    <File key={child.path} child={child} />
                   ) : (
                     <Folder
-                      onClick={() => getContent(child)}
                       files={child.children}
                       name={child.name}
                       key={child.path}
-                      selected={selected}
                     />
                   )
                 )}
@@ -75,13 +61,8 @@ function SideBar ({ dir, content, setContent, setSelected, selected }) {
   )
 }
 
-// <LI
-//   selected={selected.path}
-//   own={child.path}
-//   key={child.path}
-//   onClick={() => getContent(child)}
-// >
-//   {child.name}
-// </LI>
+const mapStateToProps = state => ({
+  dir: state.directories
+})
 
-export default SideBar
+export default connect(mapStateToProps, null)(SideBar)

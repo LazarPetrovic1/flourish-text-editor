@@ -1,37 +1,36 @@
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+:root {
+  --main-bg: rgb(64, 61, 65);
+  --main-bg-darker: rgb(49, 46, 50);
+  --main-fg: white;
+  --welcome-text: rgb(130, 130, 130);
+  --repo-success: rgba(140, 214, 114, 0.69);
+  --repo-fail: rgba(232, 122, 122, 0.68);
+  --close-tab: rgba(177, 177, 177, 0.8);
+  --save-file: rgb(35, 116, 161);
+  --close: rgb(255, 0, 0);
+  --helpers-bg: rgba(0, 0, 0, 0.2);
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(64, 61, 65);
+/* MISC HELPERS */
+
+.table_md {
+  background: transparent;
+  border: 1px solid var(--main-fg);
+  border-collapse: collapse;
   color: white;
+  width: 100%;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-    display: inline-block;
-    padding: 0 5px;
-}
-
-.codespot {
-  display: flex;
-  overflow: auto;
-  max-height: 100vh;
+.table_md th, .table_md td {
+  border: 1px solid white;
+  padding: 1rem
 }
 
 .opening-welcome-text,
 .helper-welcome-text,
 .misc-text,
 .image-prompt-text {
-  color: rgb(130, 130, 130);
+  color: var(--welcome-text);
   margin: 1rem 0;
   text-align: center;
 }
@@ -48,14 +47,61 @@ code {
   font-size: 1.8rem;
 }
 
-.repo-success: {
-  color: rgba(140, 214, 114, 0.69);
+.repo-success {
+  color: var(--repo-success);
   font-size: 1.4rem;
+  cursor: pointer;
 }
 
-.repo-fail {
-  color: rgba(232, 122, 122, 0.68);
+.repo-success:hover {
+  text-decoration: underline;
+}
+
+.center {
+  text-align: center;
+}
+
+/* .repo-fail {
+  color: var(--repo-fail);
   font-size: 1.4rem;
+} */
+
+/* IMPORTANT STYLES */
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--main-bg);
+  color: var(--main-fg);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+    display: inline-block;
+    padding: 0 5px;
+}
+
+.codespot {
+  display: flex;
+  overflow: auto;
+  width: 100%;
+}
+
+.codespot2 {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  width: 100%;
 }
 
 .nowrap {
@@ -64,4 +110,134 @@ code {
 
 .image-prompt-text {
   margin: 2rem 1rem;
+}
+
+.tab-editor {
+  display: grid;
+  width: 100%;
+}
+
+.tabs-all {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+
+}
+
+.close-tab {
+  color: var(--close-tab);
+  position: absolute;
+  right: 10px;
+  padding: 5px;
+  transition: 100ms all linear;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.close-tab:hover {
+  color: var(--main-fg);
+}
+
+.blue-dot-save {
+  height: 5px;
+  width: 5px;
+  border-radius: 50%;
+  background-color: var(--save-file);
+  display: inline-block;
+  margin: 0 5px;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+    filter: hue-rotate(180deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: hue-rotate(0deg);
+  }
+}
+
+.codeline-container {
+  height: calc(100vh - 72px);
+  display: flex;
+}
+
+.codeline-info {
+  width: calc(100% - 200px);
+}
+
+.codeline-list {
+  height: 100%;
+  width: 200px;
+  border-left: 2px solid var(--main-fg);
+}
+
+.center-codeline {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 1rem;
+  padding: 1rem 0;
+}
+
+.close-codeline {
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  padding: 0.5rem 0.8rem;
+  font-size: 1.3rem;
+  border-radius: 50%;
+  color: var(--close);
+  background-color: var(--main-fg);
+  transition: 100ms all linear;
+}
+
+.close-codeline:hover {
+  background-color: var(--close);
+  color: var(--main-fg);
+}
+
+.helpers {
+  position: absolute;
+  top: 4.5rem;
+  right: 0;
+  z-index: 2;
+  padding: 1rem 0.3rem;
+  background-color: var(--helpers-bg);
+}
+
+.helpers img {
+  width: 40px;
+  display: block;
+  margin: 1rem 0;
+  cursor: pointer;
+}
+
+.ace-editor-main {
+  background-color: transparent;
+  color: var(--main-fg);
+  display: block;
+  outline: none;
+  border: none;
+  font-size: 1.2rem;
+  height: calc(100vh - 34px) !important;
+  resize: none;
+  width: 100% !important;
+  padding-right: 1rem;
+}
+
+.ace_gutter-cell {
+  background-color: var(--main-bg);
+  color: var(--main-fg);
+}
+
+.ace-tm,
+.ace_gutter {
+  background-color: var(--main-bg) !important;
+}
+
+.ace_gutter-active-line {
+  background-color: var(--main-bg-darker) !important;
 }
