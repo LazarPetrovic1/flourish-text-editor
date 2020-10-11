@@ -1,3 +1,7 @@
+html, body {
+  scroll-behavior: smooth;
+}
+
 :root {
   --main-bg: rgb(64, 61, 65);
   --main-bg-darker: rgb(49, 46, 50);
@@ -147,19 +151,6 @@ code {
   margin: 0 5px;
 }
 
-@keyframes cardEntrance {
-  from {
-    opacity: 0;
-    transform: scale(0.3);
-    filter: hue-rotate(180deg);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-    filter: hue-rotate(0deg);
-  }
-}
-
 .codeline-container {
   height: calc(100vh - 72px);
   display: flex;
@@ -215,6 +206,19 @@ code {
   cursor: pointer;
 }
 
+.add-p {
+  margin: 0.5rem 0;
+  user-select: none;
+}
+
+.centralized {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+/* ACE TEXT EDITOR ADDITIONAL STYLES */
+
 .ace-editor-main {
   background-color: transparent;
   color: var(--main-fg);
@@ -240,4 +244,19 @@ code {
 
 .ace_gutter-active-line {
   background-color: var(--main-bg-darker) !important;
+}
+
+/* KEYFRAMES */
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+    filter: hue-rotate(180deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: hue-rotate(0deg);
+  }
 }

@@ -1,14 +1,29 @@
 # The help page
 
-This application has been made using [electron](https://www.electronjs.org/) and [react](https://reactjs.org/).
+This application has been made using the following packages:
+
+<ul>
+<li><a title="framework" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://www.electronjs.org/">electron</a></li>
+<li><a title="framework/library?" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://reactjs.org/">react</a></li>
+<li><a title="package/component" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://github.com/securingsincity/react-ace">react-ace</a></li>
+<li><a title="package/management" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://redux.js.org/">redux</a></li>
+<li><a title="package/component-lib" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://reactrouter.com/">react-router</a></li>
+<li><a title="package/styler" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://styled-components.com/">styled-components</a></li>
+<li><a title="package/util" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://github.com/uuidjs/uuid">uuid</a></li>
+<li><a title="package/systemic" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://www.npmjs.com/package/react-app-rewired">react-app-rewired</a></li>
+<li><a title="package/util && package/component" style="cursor: help; color: rgb(86, 230, 135); text-decoration: none;" href="https://momentjs.com/">moment</a></li>
+</ul>
 
 ### Table of contents
 
-+ [Why this project](#why)
-+ [Development](#dev)
-+ [Features](#feats)
+<ul>
+  <li><a href="#why" style="color: rgb(86, 230, 135); text-decoration: none;">Why this project</a></li>
+  <li><a href="#dev" style="color: rgb(86, 230, 135); text-decoration: none;">Development</a></li>
+  <li><a href="#feats" style="color: rgb(86, 230, 135); text-decoration: none;">Features</a></li>
+  <li><a href="#ask" style="color: rgb(86, 230, 135); text-decoration: none;">Ask questions</a></li>
+</ul>
 
-### <a name="why"># Why this project</a>
+### <a name="why" style="color: rgb(86, 230, 135); text-decoration: none;"># Why this project</a>
 
 I have been interested in making something fun that could be used by the community for a while.
 Think of it like giving back to the community I have grown to love.
@@ -17,7 +32,7 @@ actually be a viable alternative to the "*big free three*" (**[Atom](https://ato
 
 > Since I use Atom as my default text editor, this project was heavily inspired by it.
 
-### <a name="dev"># Development</a>
+### <a name="dev" style="color: rgb(86, 230, 135); text-decoration: none;"># Development</a>
 
 In order to experiment with this project:
 
@@ -43,7 +58,7 @@ npm run dev
 
 ![loading](help/loading.png)
 
-### <a name="feats"># Features</a>
+### <a name="feats" style="color: rgb(86, 230, 135); text-decoration: none;"># Features</a>
 
 The app is meant to have all the basic features found in other text editors:
 
@@ -142,3 +157,8 @@ The app is meant to have all the basic features found in other text editors:
 </table>
 
 **Note: There's another dropdown menu in development aptly named "Dev"**. *Ctrl + Q* toggles development tools, while *Ctrl + R* reloads the app
+
+### <a name="ask" style="color: rgb(86, 230, 135); text-decoration: none;"># Ask questions</a>
+
+If you stumbled upon this and were interested, you might want to make an impact.
+Open up an issue or a PR and I might implement it.

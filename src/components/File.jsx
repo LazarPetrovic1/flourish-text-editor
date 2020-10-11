@@ -40,7 +40,7 @@ function File ({
 
   return (
     <LI
-      selected={selected}
+      selected={selected.path}
       own={child.path}
       title={child.name}
       onClick={() => updateAllFileStuff(child)}

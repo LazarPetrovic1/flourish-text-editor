@@ -34,7 +34,9 @@ function Folder ({ files, selected, name }) {
           ) : (
             file.type === 'file' &&
             isOpen && (
-              <File key={file.path} selected={selected.path} child={file} />
+              <div className='folder-dropdown'>
+                <File key={file.path} selected={selected.path} child={file} />
+              </div>
             )
           )
         )}
@@ -45,5 +47,56 @@ function Folder ({ files, selected, name }) {
 const mapStateToProps = state => ({
   selected: state.selection
 })
+
+// GET INFO
+
+// const getInfo = (file, pass = true) => {
+//     if (file.type === 'directory') return
+//     const content = fs.readFileSync(file.path).toString()
+//     if (pass) {
+//       setTextValue(content)
+//       setSelected(file)
+//     }
+//
+//     return (
+//       file && (
+//         <div className='container'>
+//           <CodeMirror
+//             autoCursor
+//             value={textValue}
+//             options={{
+//               theme: getTheme(theme),
+//               keyMap: getKeyMap(keyMap),
+//               lineWrapping: lineWrap,
+//               scrollbarStyle: 'overlay',
+//               mode: getMode(mode || (file && file.name.split('.')[1])),
+//               lineNumbers: true,
+//               matchBrackets: true,
+//               matchTags: true,
+//               autoCloseBrackets: true
+//             }}
+//             onKeyDown={(editor, event) => {
+//               console.log({ editor, event })
+//             }}
+//             onBeforeChange={(editor, data, value) => {
+//               setTextValue(value)
+//             }}
+//             onChange={(editor, data, value) => {}}
+//             onKeyDown={async (editor, e) => {
+//               if (e.keyCode === 116) {
+//                 await fs.writeFile(
+//                   path.resolve(selected.dir, selected.name),
+//                   e.target.value.toString(),
+//                   err => {
+//                     if (err) console.error(err)
+//                   }
+//                 )
+//               }
+//             }}
+//           />
+//         </div>
+//       )
+//     )
+//   }
 
 export default connect(mapStateToProps)(Folder)

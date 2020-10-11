@@ -8,7 +8,8 @@ export const setTab = payload => dispatch => {
   }
 }
 
-export const closeTab = payload => dispatch =>
-  dispatch({ type: FILTER_TABS, payload })
+export const closeTab = payload => (
+  dispatch // payload is filePath
+) => dispatch({ type: FILTER_TABS, payload })
 
 export const killTabs = () => dispatch => dispatch({ type: KILL_TABS })

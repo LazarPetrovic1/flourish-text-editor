@@ -14,6 +14,7 @@ const HelpRender = styled.div`
   resize: none;
   width: calc(100% - 1rem);
   padding: 1rem;
+  scroll-behavior: smooth;
 `
 
 export default HelpRender

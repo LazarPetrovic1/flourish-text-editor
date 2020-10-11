@@ -6,15 +6,57 @@ import Close from '../styled/close'
 import ProjectFolder from '../styled/projectfolder'
 import { Icon } from '../styled/folder-styles'
 import SideNavContainer from '../styled/sidenavcontainer'
+import Modal from './Modal'
+import ModalInput from '../styled/modalinput'
+import ModalInputContainer from '../styled/modalinputcontainer'
+import ModalButton from '../styled/modalbutton'
 import { UL } from '../styled/list'
 import File from './File'
 import { isEmpty } from '../utils/isEmpty'
 import Folder from './Folder'
-import { connect } from 'react-redux'
+import { connect, batch } from 'react-redux'
+import { writeFile } from '../utils/writeFile'
+import { deleteFile } from '../utils/deleteFile'
+import { setDirectory } from '../actions/directories'
+import { setContent } from '../actions/content'
+import { closeTab, setTab } from '../actions/tab'
+const dirTree = window.require('directory-tree')
+// import dirTree from 'directory-tree'
 
-function SideBar ({ content, setContent, dir }) {
+const { ipcRenderer } = window.require('electron')
+
+function SideBar ({ content, setContent, dir, setDirectory, tabs, selected }) {
   const [open, setOpen] = useState(true)
   const [see, setSee] = useState(true)
+  const [modalCreate, setModalCreate] = useState(false)
+  const [modalRemove, setModalRemove] = useState(false)
+  const [modalPath, setModalPath] = useState('')
+
+  ipcRenderer.on('new-file', (e, homedir) => {
+    if (dir.path) {
+      setModalPath(`${dir.path}/`)
+    } else {
+      setModalPath(`${homedir}/`)
+    }
+    setModalCreate(true)
+  })
+
+  ipcRenderer.on('remove-file', () => setModalRemove(true))
+
+  const removeAll = () => {
+    const ifTab = tabs.find(tab => tab.path === selected.path)
+    const otherTab = tabs.find(tab => tab.path !== selected.path)
+    if (ifTab) {
+      batch(() => {
+        closeTab(ifTab.path)
+        setTab(otherTab)
+        setContent(otherTab)
+      })
+    }
+    deleteFile(ifTab.path)
+    setDirectory(dirTree(dir.path))
+    setModalRemove(false)
+  }
 
   return (
     <SideNavContainer open={open} style={{ position: 'relative' }}>
@@ -57,12 +99,63 @@ function SideBar ({ content, setContent, dir }) {
           </Sidenav>
         </ResizePanel>
       )}
+      {modalCreate && (
+        <Modal>
+          <ModalInputContainer
+            onSubmit={async e => {
+              e.preventDefault()
+              await writeFile(modalPath)
+              await setModalCreate(false)
+              await setDirectory(dirTree(dir.path))
+            }}
+          >
+            <div>
+              <p className='add-p'>
+                <i className='fas fa-plus' />
+                &nbsp; Enter path for the file to create:
+              </p>
+              <ModalInput
+                type='text'
+                autoFocus
+                value={modalPath}
+                onChange={e => setModalPath(e.target.value)}
+                onKeyDown={e => {
+                  e.persist()
+                  if (e.key === 'Escape') setModalCreate(false)
+                }}
+              />
+            </div>
+          </ModalInputContainer>
+        </Modal>
+      )}
+      {modalRemove && (
+        <Modal>
+          <div>
+            <p>Are you sure you want to delete {selected.name}?</p>
+            <div className='centralized'>
+              <ModalButton onClick={() => removeAll()}>Yes</ModalButton>
+              <ModalButton onClick={() => setModalRemove(false)}>
+                No
+              </ModalButton>
+            </div>
+          </div>
+        </Modal>
+      )}
     </SideNavContainer>
   )
 }
 
 const mapStateToProps = state => ({
-  dir: state.directories
+  dir: state.directories,
+  tabs: state.tab,
+  selected: state.selection
 })
 
-export default connect(mapStateToProps, null)(SideBar)
+const mapDispatchToProps = dispatch => ({
+  setDirectory: x => dispatch(setDirectory(x)),
+  setContent: x => dispatch(setContent(x)),
+  closeTab: x => dispatch(closeTab(x)),
+  setTab: x => dispatch(setTab(x))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(SideBar)

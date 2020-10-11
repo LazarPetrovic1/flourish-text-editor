@@ -23,6 +23,11 @@ const template = [
     label: 'File',
     submenu: [
       {
+        label: 'New file',
+        click: () => win.webContents.send('new-file', require('os').homedir()),
+        accelerator: 'Ctrl+N'
+      },
+      {
         label: 'Open File',
         click: async () => {
           const { filePaths } = await dialog.showOpenDialog({
@@ -63,10 +68,14 @@ const template = [
       { type: 'separator' },
       {
         label: 'Open CodeLine',
-        click: async () => {
-          win.webContents.send('open-code-line')
-        },
+        click: () => win.webContents.send('open-code-line'),
         accelerator: 'Ctrl+Shift+I'
+      },
+      { type: 'separator' },
+      {
+        label: 'Remove File',
+        click: () => win.webContents.send('remove-file'),
+        accelerator: 'Delete'
       },
       { type: 'separator' },
       {
