@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 const Close = styled.span`
   position: absolute;
-  right: ${props => (props.open ? '-0.5rem' : '-1rem')};
+  right: ${props => (props.open ? '-0.4rem' : '-1rem')};
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;

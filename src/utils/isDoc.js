@@ -1,17 +1,16 @@
-export const isImage = filename => {
-  console.log('FILENAME', filename)
+export const isDoc = filename => {
   const extension = filename
     .split('.')
     [filename.split('.').length - 1].toLowerCase()
+  console.log('EXTENSION', extension)
 
   // SVGs are treated as textual files
   switch (extension) {
-    case 'tif':
-    case 'tiff':
-    case 'jpeg':
-    case 'jpg':
-    case 'gif':
-    case 'png':
+    case 'doc':
+    case 'docx':
+    case 'pdf':
+    case 'ppt':
+    case 'pptx':
       return true
     default:
       return false

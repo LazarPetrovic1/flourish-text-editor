@@ -66,7 +66,8 @@ function CodePlace2 ({
     // eslint-disable-next-line
   }, [])
 
-  ipcRenderer.on('save-file', () => {
+  ipcRenderer.on('save-file', e => {
+    console.log('IVENT', e)
     // setContent({ content: actualContent })
     // setSelContent({ ...selected, content: actualContent })
     saveFile(selected.path, selected.actualContent)

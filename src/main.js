@@ -12,11 +12,13 @@ const path = require('path')
 const dirTree = require('directory-tree')
 const { lstatSync } = require('fs')
 const handleRedirect = require('./utils/handleRedirect')
+const openTerminal = require('./utils/openTerminal')
 
 const isMac = process.platform === 'darwin'
 let win, loader, helper
 
 ipcMain.on('get-helper', (item, url) => handleRedirect(item, url))
+ipcMain.on('get-terminal', (e, path) => openTerminal(path))
 
 const template = [
   {
@@ -137,6 +139,13 @@ const template = [
         },
         accelerator: 'Ctrl+Alt+C'
       }
+      // {
+      //   label: 'Terminal',
+      //   click: e => {
+      //     openTerminal(e, )
+      //   },
+      //   accelerator: 'Ctrl+Alt+T'
+      // }
     ]
   },
   {

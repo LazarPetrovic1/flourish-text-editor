@@ -26,6 +26,7 @@ const dirTree = window.require('directory-tree')
 const { ipcRenderer } = window.require('electron')
 
 function SideBar ({ content, setContent, dir, setDirectory, tabs, selected }) {
+  const [close, setClose] = useState(false)
   const [open, setOpen] = useState(true)
   const [see, setSee] = useState(true)
   const [modalCreate, setModalCreate] = useState(false)
@@ -59,8 +60,17 @@ function SideBar ({ content, setContent, dir, setDirectory, tabs, selected }) {
   }
 
   return (
-    <SideNavContainer open={open} style={{ position: 'relative' }}>
-      <Close onClick={() => setOpen(!open)} open={open}>
+    <SideNavContainer
+      open={open}
+      style={{ position: 'relative' }}
+      onMouseEnter={() => setClose(true)}
+      onMouseLeave={() => setClose(false)}
+    >
+      <Close
+        onClick={() => setOpen(!open)}
+        open={open}
+        style={{ display: close || !open ? 'block' : 'none' }}
+      >
         <i className={`fas fa-chevron-${open ? 'left' : 'right'}`} />
       </Close>
       {open && (
