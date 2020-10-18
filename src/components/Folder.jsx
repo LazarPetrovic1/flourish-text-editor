@@ -7,7 +7,6 @@ import {
   Icon,
   FolderStuffContainer
 } from '../styled/folder-styles'
-import { LI } from '../styled/list'
 import { connect } from 'react-redux'
 
 function Folder ({ files, selected, name }) {

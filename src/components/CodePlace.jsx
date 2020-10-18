@@ -1,20 +1,29 @@
 // eslint-disable-next-line
 import React, { useState, useEffect } from 'react'
-import MarkdownPreview from '@uiw/react-markdown-preview'
-import TextArea from '../styled/textarea'
-import HelpRender from '../styled/helprender'
+import AceEditor from 'react-ace'
 import ImageRenderer from '../styled/imagerenderer'
-import Numbered from '../styled/numbered'
-import { getLines } from '../utils/getLines'
 import { isImage } from '../utils/isImage'
-import { range } from '../utils/range'
-import { readFile } from '../utils/readFile'
-import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync'
 import { saveFile } from '../utils/saveFile'
-import { connect } from 'react-redux'
-import { closeTab } from '../actions/tab'
+import { connect, batch } from 'react-redux'
+import { closeTab, killTabs } from '../actions/tab'
 import { setContent } from '../actions/content'
-import { deselectItem, selectItem } from '../actions/selection'
+import { deselectItem, selectItem, setSelContent } from '../actions/selection'
+import HelpRender from '../styled/helprender'
+import MarkdownPreview from '@uiw/react-markdown-preview'
+import store from '../store'
+import {
+  FILTER_TABS,
+  SELECT_ITEM,
+  DESELECT_ITEM,
+  KILL_TABS
+} from '../actions/types'
+import 'ace-builds/src-noconflict/mode-javascript'
+import 'ace-builds/src-noconflict/theme-twilight'
+import 'ace-builds/src-noconflict/ext-language_tools'
+import 'ace-builds/src-noconflict/snippets/javascript'
+import 'tui-image-editor/dist/tui-image-editor.css'
+import ImageEditor from '@toast-ui/react-image-editor'
+
 const { ipcRenderer } = window.require('electron')
 
 function CodePlace ({
@@ -23,167 +32,141 @@ function CodePlace ({
   tabs,
   selected,
   actualContent,
-  setActualContent
+  setActualContent,
+  setSelContent,
+  closeTab,
+  setContent,
+  deselectItem,
+  selectItem,
+  killTabs
 }) {
-  const [lineNumbers, setLineNumbers] = useState([1])
-  const [image, setImage] = useState(false)
   const [isHelper, setIsHelper] = useState(false)
+  const [image, setImage] = useState(false)
+
   useEffect(() => {
     ;(async function () {
-      const x = getLines(selected.path)
-      if (lineNumbers.length <= 1) {
-        const nums = range(1, x + 1)
-        setLineNumbers(nums)
-      }
-
       if (isImage(selected.path)) {
         await setImage(true)
       } else if (!isImage(selected.path)) {
-        setImage(false)
-      }
-
-      if (!selected && content.length < 1 && lineNumbers.length !== 1) {
-        setLineNumbers([1])
+        await setImage(false)
       }
 
       if (selected && selected.isHelper) {
         setIsHelper(true)
       }
+
+      await setContent(selected)
+      await setActualContent(selected.actualContent)
     })()
-    setContent(selected)
-    setActualContent(readFile(selected.path))
     // eslint-disable-next-line
-  }, [selected])
+  }, [])
 
-  ipcRenderer.on('save-file', () => {
-    setContent({ content: actualContent })
-    return saveFile(selected.path, actualContent)
+  useEffect(() => {
+    ipcRenderer.on('close-file', closeFile)
+    // eslint-disable-next-line
+  }, [])
+
+  ipcRenderer.on('save-file', e => {
+    console.log('IVENT', e)
+    // setContent({ content: actualContent })
+    // setSelContent({ ...selected, content: actualContent })
+    saveFile(selected.path, selected.actualContent)
   })
-
-  ipcRenderer.on('close-file', async () => {
-    if (tabs.length === 1) {
-      await closeTab(selected.path)
-      await deselectItem()
-      await setContent({ content: '' })
-      return
-    }
-    await closeTab(selected.path)
-    await selectItem(tabs[0])
-    await setContent(selected)
-  })
-
-  const onKeyDown = e => {
-    // Some keycode behaviours
-    e.persist()
-    if (e.keyCode === 13) {
-      // Enter || Return
-      setLineNumbers([...lineNumbers, lineNumbers[lineNumbers.length - 1] + 1])
-      // return
-    }
-
-    if (e.keyCode === 9) {
-      // Tab
-      setActualContent(actualContent.concat(' ', ' '))
-      // return
-    }
-
-    if (e.keyCode === 8) {
-      // Backspace
-      if (lineNumbers.length === 1) {
-        // return
-      }
-
-      if (
-        actualContent.split('\n')[actualContent.split('\n').length - 1].length <
-        1
-      ) {
-        setLineNumbers(lineNumbers.slice(0, lineNumbers.length - 1))
-        // return
-      }
-    }
-
-    switch (e.key) {
-      case 'WakeUp':
-      case 'Control':
-      case 'Shift':
-      case 'CapsLock':
-      case 'Alt':
-      case 'PageUp':
-      case 'PageDown':
-      case 'Delete':
-      case 'Insert':
-      case 'End':
-      case 'Home':
-      case 'F1':
-      case 'F2':
-      case 'F3':
-      case 'F4':
-      case 'F5':
-      case 'F6':
-      case 'F7':
-      case 'F8':
-      case 'F9':
-      case 'F10':
-      case 'F11':
-      case 'F12':
-      case 'Escape':
-        break
-      // case '{':
-      //   setActualContent(actualContent.concat('{', '}'))
-      //   break
-      // case '[':
-      //   setActualContent(actualContent.concat('[', ']'))
-      //   break
-      // case '(':
-      //   setActualContent(actualContent.concat('(', ')'))
-      //   break
-      default:
-        break
-    }
-  }
 
   const onChange = async e => {
-    e.persist()
-    await setActualContent(e.target.value)
+    await setActualContent(e)
+    await setSelContent({ ...selected, actualContent: e })
+  }
+
+  const closeFile = () => {
+    const thisTab = store.getState().tab.find(tab => tab.path === selected.path)
+    const foundTab = store
+      .getState()
+      .tab.find(tab => tab.path !== store.getState().selection.path)
+    if (foundTab) {
+      batch(() => {
+        store.dispatch({ type: FILTER_TABS, payload: thisTab.path })
+        store.dispatch({ type: SELECT_ITEM, payload: foundTab })
+      })
+    } else {
+      batch(() => {
+        store.dispatch({ type: KILL_TABS, payload: thisTab.path })
+        store.dispatch({ type: DESELECT_ITEM, payload: foundTab })
+      })
+    }
   }
 
   return image ? (
     <ImageRenderer>
-      <img
-        title={selected.name}
-        src={`root://${selected.path}`}
-        alt='A rendering of non-textual file'
+      <ImageEditor
+        includeUI={{
+          loadImage: {
+            path: `root://${selected.path}`,
+            name: selected.name
+          },
+          menu: [
+            'crop',
+            'flip',
+            'rotate',
+            'draw',
+            'shape',
+            'icon',
+            'text',
+            'mask',
+            'filter'
+          ],
+          initMenu: 'filter',
+          uiSize: {
+            width: '90%',
+            height: '85%'
+          },
+          menuBarPosition: 'bottom'
+        }}
+        cssMaxHeight={500}
+        cssMaxWidth={700}
+        selectionStyle={{
+          cornerSize: 20,
+          rotatingPointOffset: 70
+        }}
+        usageStatistics
       />
+      <h3 style={{ marginTop: '1rem' }}>
+        <b>NOTE:</b> The Image Editor hasn't been tested yet.
+      </h3>
     </ImageRenderer>
+  ) : isHelper ? (
+    <>
+      <HelpRender>
+        <MarkdownPreview source={actualContent} />
+      </HelpRender>
+    </>
   ) : (
-    <div className='codespot'>
-      <ScrollSync>
-        <>
-          <ScrollSyncPane>
-            {!isHelper ? (
-              <Numbered className='nrs'>
-                {lineNumbers &&
-                  lineNumbers.map(val => <div key={val}>{val}</div>)}
-              </Numbered>
-            ) : null}
-          </ScrollSyncPane>
-          <ScrollSyncPane>
-            {isHelper ? (
-              <>
-                <HelpRender>
-                  <MarkdownPreview source={actualContent} />
-                </HelpRender>
-              </>
-            ) : (
-              <TextArea
-                value={actualContent}
-                onKeyDown={onKeyDown}
-                onChange={onChange}
-              />
-            )}
-          </ScrollSyncPane>
-        </>
-      </ScrollSync>
+    <div
+      className='codespot2'
+      style={{
+        height: 'calc(100vh - 35px)',
+        overflow: 'auto'
+      }}
+    >
+      <AceEditor
+        mode='javascript'
+        className='ace-editor-main'
+        theme='twilight'
+        onChange={onChange}
+        fontSize={17}
+        showPrintMargin={false}
+        showGutter
+        highlightActiveLine
+        value={selected.actualContent}
+        setOptions={{
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+          enableSnippets: true,
+          showLineNumbers: true,
+          tabSize: 2
+        }}
+        wrapEnabled
+      />
     </div>
   )
 }
@@ -195,9 +178,13 @@ const mapStateToProps = state => ({
   selected: state.selection
 })
 
-export default connect(mapStateToProps, {
-  closeTab,
-  setContent,
-  deselectItem,
-  selectItem
-})(CodePlace)
+const mapDispatchToProps = dispatch => ({
+  closeTab: x => dispatch(closeTab(x)),
+  setContent: x => dispatch(setContent(x)),
+  deselectItem: x => dispatch(deselectItem(x)),
+  selectItem: x => dispatch(selectItem(x)),
+  setSelContent: x => dispatch(setSelContent(x)),
+  killTabs: () => dispatch(killTabs())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(CodePlace)

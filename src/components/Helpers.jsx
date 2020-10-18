@@ -21,6 +21,9 @@ const os = window.require('os')
 function Helpers ({ dir }) {
   const [helpers, setHelpers] = useState(true)
   const [page, setPage] = useState(1)
+
+  ipcRenderer.on('toggle-helpers', () => setHelpers(!helpers))
+
   return (
     <div className='helpers'>
       <Center>

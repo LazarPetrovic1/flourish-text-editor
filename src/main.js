@@ -75,6 +75,12 @@ const template = [
       },
       { type: 'separator' },
       {
+        label: 'Toggle Side Helpers',
+        click: () => win.webContents.send('toggle-helpers'),
+        accelerator: 'Ctrl+Shift+H'
+      },
+      { type: 'separator' },
+      {
         label: 'Remove File',
         click: () => win.webContents.send('remove-file'),
         accelerator: 'Delete'
@@ -86,6 +92,14 @@ const template = [
           win.webContents.send('close-file')
         },
         accelerator: 'Ctrl+W'
+      },
+      {
+        label: 'Quit',
+        click: () => {
+          win = null
+          app.quit()
+        },
+        accelerator: 'Ctrl+Shift+Q'
       }
     ]
   },
@@ -138,14 +152,56 @@ const template = [
           handleRedirect(e, 'https://cdnjs.com/')
         },
         accelerator: 'Ctrl+Alt+C'
+      },
+      {
+        label: 'Figma',
+        click: e => {
+          handleRedirect(e, 'https://www.figma.com/')
+        },
+        accelerator: 'Ctrl+Alt+X'
+      },
+      {
+        label: 'Gitlab',
+        click: e => {
+          handleRedirect(e, 'https://about.gitlab.com/')
+        },
+        accelerator: 'Ctrl+Alt+L'
+      },
+      {
+        label: 'Google Fonts',
+        click: e => {
+          handleRedirect(e, 'https://fonts.google.com/')
+        },
+        accelerator: 'Ctrl+Alt+K'
+      },
+      {
+        label: 'Photopea',
+        click: e => {
+          handleRedirect(e, 'https://www.photopea.com/')
+        },
+        accelerator: 'Ctrl+Alt+P'
+      },
+      {
+        label: 'Wordpress',
+        click: e => {
+          handleRedirect(e, 'https://wordpress.com/')
+        },
+        accelerator: 'Ctrl+Alt+M'
+      },
+      {
+        label: 'Pixabay',
+        click: e => {
+          handleRedirect(e, 'https://pixabay.com/')
+        },
+        accelerator: 'Ctrl+Alt+Y'
+      },
+      {
+        label: 'Unsplash',
+        click: e => {
+          handleRedirect(e, 'https://unsplash.com/')
+        },
+        accelerator: 'Ctrl+Alt+U'
       }
-      // {
-      //   label: 'Terminal',
-      //   click: e => {
-      //     openTerminal(e, )
-      //   },
-      //   accelerator: 'Ctrl+Alt+T'
-      // }
     ]
   },
   {

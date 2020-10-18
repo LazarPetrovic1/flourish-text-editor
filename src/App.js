@@ -2,7 +2,7 @@
 // eslint-disable-next-line
 import React, { useState, useEffect } from 'react'
 import SideBar from './components/SideBar'
-import CodePlace2 from './components/CodePlace2'
+import CodePlace from './components/CodePlace'
 import Tabs from './components/Tabs'
 import Application from './styled/app'
 import Marginalized from './styled/marginalized'
@@ -117,7 +117,7 @@ function App ({ tab, selected, dir, content }) {
           {codeLine ? (
             <CodeLine setCodeLine={setCodeLine} />
           ) : tab.length > 0 && !isEmpty(selected) ? (
-            <CodePlace2
+            <CodePlace
               actualContent={actualContent}
               setActualContent={setActualContent}
             />
