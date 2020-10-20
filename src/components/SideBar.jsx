@@ -42,7 +42,10 @@ function SideBar ({ content, setContent, dir, setDirectory, tabs, selected }) {
     setModalCreate(true)
   })
 
-  ipcRenderer.on('remove-file', () => setModalRemove(true))
+  ipcRenderer.on(
+    'remove-file',
+    () => !isEmpty(selected) && setModalRemove(true)
+  )
 
   const removeAll = () => {
     const ifTab = tabs.find(tab => tab.path === selected.path)

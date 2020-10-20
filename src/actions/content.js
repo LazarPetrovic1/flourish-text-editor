@@ -1,4 +1,4 @@
-import { SET_CONTENT } from './types'
+import { SET_CONTENT, KILL_CONTENT } from './types'
 
 export const setContent = payload => async dispatch => {
   try {
@@ -10,3 +10,5 @@ export const setContent = payload => async dispatch => {
     )
   }
 }
+
+export const killContent = dispatch => dispatch({ KILL_CONTENT })

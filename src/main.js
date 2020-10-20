@@ -312,9 +312,9 @@ app.on('ready', () => {
 
   loader.loadFile(`${__dirname}/loading.html`)
 
-  setTimeout(function () {
-    createWindow()
-  }, 5000) // Takes about 5s to load electron and react after npm run dev, might as well show a simple animation
+  // setTimeout(function () {
+  createWindow()
+  // }, 5000) // Takes about 5s to load electron and react after npm run dev, might as well show a simple animation
 })
 
 app.on('window-all-closed', function () {

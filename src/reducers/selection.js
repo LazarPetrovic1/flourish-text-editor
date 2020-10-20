@@ -5,6 +5,7 @@ const initialState = {}
 export default (state = initialState, action) => {
   switch (action.type) {
     case DESELECT_ITEM:
+      console.log('INITIAL STATE IN SELECTED', initialState)
       return initialState
     case SELECT_ITEM:
       return action.payload

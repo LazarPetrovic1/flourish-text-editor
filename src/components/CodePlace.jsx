@@ -15,7 +15,8 @@ import {
   FILTER_TABS,
   SELECT_ITEM,
   DESELECT_ITEM,
-  KILL_TABS
+  KILL_TABS,
+  KILL_CONTENT
 } from '../actions/types'
 import 'ace-builds/src-noconflict/mode-javascript'
 import 'ace-builds/src-noconflict/theme-twilight'
@@ -67,7 +68,6 @@ function CodePlace ({
   }, [])
 
   ipcRenderer.on('save-file', e => {
-    console.log('IVENT', e)
     // setContent({ content: actualContent })
     // setSelContent({ ...selected, content: actualContent })
     saveFile(selected.path, selected.actualContent)
@@ -83,6 +83,7 @@ function CodePlace ({
     const foundTab = store
       .getState()
       .tab.find(tab => tab.path !== store.getState().selection.path)
+    if (!thisTab && !foundTab) return
     if (foundTab) {
       batch(() => {
         store.dispatch({ type: FILTER_TABS, payload: thisTab.path })
@@ -90,8 +91,9 @@ function CodePlace ({
       })
     } else {
       batch(() => {
-        store.dispatch({ type: KILL_TABS, payload: thisTab.path })
-        store.dispatch({ type: DESELECT_ITEM, payload: foundTab })
+        store.dispatch({ type: KILL_TABS })
+        store.dispatch({ type: DESELECT_ITEM })
+        store.dispatch({ type: KILL_CONTENT })
       })
     }
   }

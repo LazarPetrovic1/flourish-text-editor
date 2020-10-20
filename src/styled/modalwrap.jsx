@@ -10,7 +10,7 @@ const ModalWrap = styled.section`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1;
+  z-index: 5;
   background-color: rgba(0, 0, 0, 0.7);
   width: 100vw;
 `
