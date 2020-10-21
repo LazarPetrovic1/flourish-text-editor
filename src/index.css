@@ -217,6 +217,47 @@ code {
   margin-top: 1rem;
 }
 
+.bottom-control {
+  padding: 0 1rem;
+  display: flex;
+  justify-content: flex-end;
+  background-color: var(--main-bg-darker);
+  text-align: right;
+}
+
+.bottom-control-item {
+  padding: 0.25rem 1rem;
+  cursor: pointer;
+}
+
+.bottom-control-item:hover {
+  background-color: var(--main-bg);
+}
+
+.modal-select {
+  outline: none;
+  border: 1px solid var(--main-fg);
+  /* padding: 0.5rem 1rem; */
+  background: transparent;
+  color: var(--main-fg);
+  font-weight: bolder;
+  font-size: 1.2rem;
+  max-height: 300px;
+}
+
+/* select.modal-select {
+  max-height: 100px;
+} */
+
+.modal-select option {
+  background: var(--main-bg);
+  color: var(--main-fg);
+  font-weight: bolder;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 0.25rem 0.5rem;
+}
+
 /* ACE TEXT EDITOR ADDITIONAL STYLES */
 
 .ace-editor-main {

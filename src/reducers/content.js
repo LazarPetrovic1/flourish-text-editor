@@ -8,7 +8,6 @@ export default (state = initialState, action) => {
       return { content: action.payload.content.toString() }
     case KILL_CONTENT:
       return initialState
-      break
     default:
       return state
   }

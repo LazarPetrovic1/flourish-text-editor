@@ -13,6 +13,7 @@ const dirTree = require('directory-tree')
 const { lstatSync } = require('fs')
 const handleRedirect = require('./utils/handleRedirect')
 const openTerminal = require('./utils/openTerminal')
+const isDev = require('electron-is-dev')
 
 const isMac = process.platform === 'darwin'
 let win, loader, helper
@@ -103,7 +104,7 @@ const template = [
       }
     ]
   },
-  {
+  isDev && {
     label: 'Dev',
     submenu: [
       {
@@ -258,12 +259,16 @@ const createWindow = () => {
     icon: `${__dirname}/assets/logo.png`
   })
 
-  win.loadURL('http://localhost:3000')
+  win.loadURL(
+    isDev
+      ? 'http://localhost:3000'
+      : `file://${path.join(__dirname, '../build/index.html')}`
+  )
   win.on('closed', function () {
     win = null
   })
 
-  loader.close()
+  // loader.close()
 
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
@@ -304,13 +309,13 @@ app.on('ready', () => {
     }
   })
 
-  loader = new BrowserWindow({
-    width: 200,
-    height: 200,
-    frame: false
-  })
+  // loader = new BrowserWindow({
+  //   width: 200,
+  //   height: 200,
+  //   frame: false
+  // })
 
-  loader.loadFile(`${__dirname}/loading.html`)
+  // loader.loadFile(`${__dirname}/loading.html`)
 
   // setTimeout(function () {
   createWindow()

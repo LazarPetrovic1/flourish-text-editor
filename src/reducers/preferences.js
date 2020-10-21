@@ -1,3 +1,4 @@
-export default [
-  /* array of objects */
-]
+const initialState = {
+  keybinding: 'sublime',
+  theme: 'twilight'
+}
