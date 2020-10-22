@@ -231,6 +231,14 @@ const template = [
             ? win.webContents.send('jobs-left', __dirname)
             : console.warn('Window undefined. Hello, there!'),
         accelerator: 'Ctrl+>'
+      },
+      {
+        label: 'Thank you',
+        click: e =>
+          win
+            ? win.webContents.send('thank-you', __dirname)
+            : console.warn('Window undefined. Hello, there!'),
+        accelerator: 'Ctrl+?'
       }
     ]
   }

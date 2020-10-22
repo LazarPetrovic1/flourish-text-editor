@@ -106,6 +106,24 @@ function App ({ tab, selected, dir, content }) {
     })
   })
 
+  ipcRenderer.on('thank-you', (e, here) => {
+    const item = {
+      id: 'THANK_YOU_CONTRIBUTIONS',
+      name: 'THANK_YOU.md',
+      path: `${here}/docs/packages/THANK_YOU.md`,
+      content: readFile(`${here}/docs/packages/THANK_YOU.md`),
+      actualContent: readFile(`${here}/docs/packages/THANK_YOU.md`),
+      type: 'file',
+      isHelper: true
+    }
+
+    batch(() => {
+      store.dispatch(setContent(item.path))
+      store.dispatch(selectItem(item))
+      store.dispatch(setTab(item))
+    })
+  })
+
   ipcRenderer.on('open-code-line', () => setCodeLine(true))
 
   return (

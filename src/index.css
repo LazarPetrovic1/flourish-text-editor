@@ -325,3 +325,30 @@ code {
     filter: hue-rotate(0deg);
   }
 }
+
+.thanks-dependency-list {
+  text-align: center !important;
+  list-style-type: lower-greek !important;
+}
+
+.thanks-devdependency-list {
+  text-align: center !important;
+  list-style-type: georgian !important;
+}
+
+.thanks-title {
+  text-align: center !important;
+  font-size: 2.3rem !important;
+  color: var(--save-file) !important;
+}
+
+.thanks-title-sm {
+  text-align: center !important;
+  font-size: 1.8rem !important;
+  color: var(--save-file) !important;
+}
+
+.thanks-link {
+  color: var(--repo-success) !important;
+  font-size: 1.2rem !important;
+}
