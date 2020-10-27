@@ -104,6 +104,35 @@ const template = [
       }
     ]
   },
+  {
+    label: 'Edit',
+    submenu: [
+      {
+        role: 'undo'
+        // accelerator: 'Ctrl+Z'
+      },
+      {
+        role: 'redo'
+        // accelerator: 'Ctrl+Shift+Z'
+      },
+      {
+        role: 'cut'
+        // accelerator: "Ctrl+X"
+      },
+      {
+        role: 'copy'
+        // accelerator: "Ctrl+C"
+      },
+      {
+        role: 'paste'
+        // accelerator: "Ctrl+V"
+      },
+      {
+        role: 'selectAll'
+        // accelerator: "Ctrl+A"
+      }
+    ]
+  },
   isDev && {
     label: 'Dev',
     submenu: [

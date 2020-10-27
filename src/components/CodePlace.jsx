@@ -22,10 +22,6 @@ import {
   KILL_TABS,
   KILL_CONTENT
 } from '../actions/types'
-import 'ace-builds/src-noconflict/ext-language_tools'
-import 'tui-image-editor/dist/tui-image-editor.css'
-
-window.require('ace-builds/src-noconflict/theme-twilight')
 
 const { ipcRenderer } = window.require('electron')
 

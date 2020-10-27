@@ -1,6 +1,7 @@
 import React from 'react'
 import ImageRenderer from '../../styled/imagerenderer'
 import ImageEditor from '@toast-ui/react-image-editor'
+import 'tui-image-editor/dist/tui-image-editor.css'
 
 function ImageComponent ({ selected }) {
   return (
